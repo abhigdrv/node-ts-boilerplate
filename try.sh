@@ -148,18 +148,36 @@ cat <<EOL > src/views/${VAR_NAME}s/new.ejs
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create ${CLASS_NAME}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Create ${CLASS_NAME}</h1>
-    <form action="/api/${VAR_NAME}/${VAR_NAME}s" method="POST">
-        <% for (let attr of ["${MODEL_ATTRIBUTES}"]) { %>
+    <form id="createForm">
+        <% "${MODEL_ATTRIBUTES}".split(" ").forEach(attr => { %>
             <% let [name, type] = attr.split(":"); %>
             <label for="<%= name %>"><%= name %>:</label>
             <input type="text" id="<%= name %>" name="<%= name %>">
-        <% } %>
+        <% }); %>
         <button type="submit">Create</button>
     </form>
     <a href="/${VAR_NAME}s">Back to List</a>
+
+    <script>
+        \$('#createForm').submit(function(event) {
+            event.preventDefault();
+            \$.ajax({
+                url: '/api/${VAR_NAME}/${VAR_NAME}s',
+                method: 'POST',
+                data: \$(this).serialize(),
+                success: function(response) {
+                    window.location.href = '/${VAR_NAME}s';
+                },
+                error: function(error) {
+                    console.error('Error creating ${VAR_NAME}:', error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 EOL
@@ -171,18 +189,36 @@ cat <<EOL > src/views/${VAR_NAME}s/edit.ejs
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit ${CLASS_NAME}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Edit ${CLASS_NAME}</h1>
-    <form action="/api/${VAR_NAME}s/<%= ${VAR_NAME}.id %>?_method=PUT" method="POST">
-        <% for (let attr of ["${MODEL_ATTRIBUTES}"]) { %>
+    <form id="editForm">
+        <% "${MODEL_ATTRIBUTES}".split(" ").forEach(attr => { %>
             <% let [name, type] = attr.split(":"); %>
             <label for="<%= name %>"><%= name %>:</label>
             <input type="text" id="<%= name %>" name="<%= name %>" value="<%= ${VAR_NAME}[name] %>">
-        <% } %>
+        <% }); %>
         <button type="submit">Update</button>
     </form>
     <a href="/${VAR_NAME}s">Back to List</a>
+
+    <script>
+        \$('#editForm').submit(function(event) {
+            event.preventDefault();
+            \$.ajax({
+                url: '/api/${VAR_NAME}/${VAR_NAME}s/<%= ${VAR_NAME}.id %>?_method=PUT',
+                method: 'POST',
+                data: \$(this).serialize(),
+                success: function(response) {
+                    window.location.href = '/${VAR_NAME}s';
+                },
+                error: function(error) {
+                    console.error('Error updating ${VAR_NAME}:', error);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 EOL
