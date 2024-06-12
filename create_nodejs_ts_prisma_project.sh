@@ -9,7 +9,7 @@ mkdir -p $PROJECT_ROOT
 # Initialize project
 cd $PROJECT_ROOT
 npm init -y
-npm install express prisma @prisma/client
+npm install express ejs prisma @prisma/client
 npm install --save-dev typescript ts-node-dev @types/node @types/express
 
 # Create directories
@@ -116,10 +116,16 @@ EOL
 cat <<EOL > src/server.ts
 import express from 'express';
 import mainRoute from './routes/mainRoute';
+import path from 'path';
 
 const app = express();
 
+const viewsPath = path.join(__dirname, 'views');
+app.set('views', viewsPath);
+app.set('view engine', 'ejs');
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api', mainRoute);
 
 const PORT = process.env.PORT || 3000;
